@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("catalog/api/[controller]")]
     public class ValuesController : Controller
     {
         // GET api/values
