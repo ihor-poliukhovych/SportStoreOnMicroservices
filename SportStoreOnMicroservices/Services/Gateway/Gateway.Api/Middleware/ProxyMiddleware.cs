@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Gateway.Api.Models;
+using Gateway.Api.Services;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
 
@@ -12,20 +14,31 @@ namespace Gateway.Api.Middleware
 { 
     public class ProxyMiddleware
     {
-        private readonly Dictionary<string, ServiceConfig> _configs;
+        private readonly IJwtTokenService _jwtTokenService;
 
-        public ProxyMiddleware(RequestDelegate next)
+        //TODO: Move configuration to Consul
+        private readonly Dictionary<string, ServiceConfig> _configs = new Dictionary<string, ServiceConfig>
         {
-            _configs = new Dictionary<string, ServiceConfig>
             {
-                {
-                    "catalog", new ServiceConfig("http", "localhost", "5001")
-                }
-            };
+                "catalog", new ServiceConfig("http", "localhost", "5002")
+            }
+        };
+
+        public ProxyMiddleware(RequestDelegate next, IJwtTokenService jwtTokenService)
+        {
+            _jwtTokenService = jwtTokenService;
         }
 
+        private static readonly HttpClient HttpClient = new HttpClient(new HttpClientHandler {UseCookies = false});
+            
         public async Task Invoke(HttpContext context)
-        {            
+        {
+            if (context.User == null)
+            {
+                context.Response.StatusCode = 401;
+                return;
+            }
+            
             var config = GetServiceConfig(context);   
             
             if (config == null)
@@ -36,17 +49,17 @@ namespace Gateway.Api.Middleware
             
             var request = GetRequest(context, config);
             
-            await SendAsync(context, config, request);
+            await SendAsync(context, request);
         }
 
         private ServiceConfig GetServiceConfig(HttpContext context)
         {
             var url = context.Request.GetUri(); 
             
-            if (url.Segments.Length < 2)
+            if (url.Segments.Length < 3)
                 return null;
                           
-            var serviceIdentifier = url.Segments[1].TrimEnd('/');
+            var serviceIdentifier = url.Segments[2].TrimEnd('/');
             
             _configs.TryGetValue(serviceIdentifier, out var config);
                 
@@ -75,18 +88,19 @@ namespace Gateway.Api.Middleware
 
                 request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
             }
-            
-            request.Headers.Host = config.GetHost();
+
             request.RequestUri = config.GetRequestUri(context.Request.Path, context.Request.QueryString.ToString());
-        
+            request.Headers.Host = config.GetHost();
+            
+            var systemToken = _jwtTokenService.GenerateSystemToken(context.User.Claims);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", systemToken);
+
             return request;
         }
 
-        private async Task SendAsync(HttpContext context, ServiceConfig config, HttpRequestMessage request)
+        private async Task SendAsync(HttpContext context, HttpRequestMessage request)
         {
-            var httpClient = new HttpClient(new HttpClientHandler {UseCookies = false});
-
-            using (var responseMessage = await httpClient.SendAsync(request,
+            using (var responseMessage = await HttpClient.SendAsync(request,
                 HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
             {
                 if (responseMessage.StatusCode == HttpStatusCode.ServiceUnavailable)
