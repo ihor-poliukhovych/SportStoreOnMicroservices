@@ -2,16 +2,25 @@
 using Catalog.Api.Providers;
 using Identity.Api.Providers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Catalog.Api
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+        
+        public Startup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+        
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IAuthOptionProvider, AuthOptionProvider>();    
+            
             var serviceProvider = services.BuildServiceProvider();
             var authOptionProvider = serviceProvider.GetService<IAuthOptionProvider>();
      
@@ -19,8 +28,11 @@ namespace Catalog.Api
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole(_configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
+            
             app.UseAuthentication();
             app.UseMvc();
         }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Api
 {    
@@ -30,12 +31,16 @@ namespace Identity.Api
             services.AddTransient<IJwtTokenService, JwtTokenService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IAuthOptionProvider, AuthOptionProvider>();
+            services.AddTransient<IDatabaseInitializer, DatabaseInitializer>();
             
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole(_configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
+            
             app.UseMvc();
         }
     }
