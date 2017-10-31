@@ -5,10 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Catalog.Api.Extentions
 {
-    public static class ServiceCollectionExtentions
+    public static class AuthenticationExtentions
     {
         public static void AddSportStoreSystemAuthentication(this IServiceCollection services, AuthOptions authOptions)
-        {   
+        {
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

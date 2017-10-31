@@ -2,6 +2,7 @@
 using Identity.Api.Models;
 using Identity.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Identity.Api.Controllers
 {
@@ -17,7 +18,14 @@ namespace Identity.Api.Controllers
             _jwtTokenService = jwtTokenService;
         }
 
+        /// <summary>
+        /// Generate user token
+        /// </summary>
+        /// <param name="model">User credentialss</param>
+        /// <returns></returns>
+        /// <response code="400">invalid username or password</response>
         [HttpPost("token")]
+        [SwaggerResponse(400)]
         public async Task<IActionResult> Token(LoginModel model)
         {
             var identity = await _identityService.GetIdentity(model);
