@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore-build:2.0 AS build-env
+FROM microsoft/aspnetcore-build:2.0 AS identity-api
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -12,5 +12,5 @@ RUN dotnet publish -c Release -o out
 # Build runtime image
 FROM microsoft/aspnetcore:2.0
 WORKDIR /app
-COPY --from=build-env /app/out .
+COPY --from=identity-api /app/out .
 ENTRYPOINT ["dotnet", "Identity.Api.dll"]
