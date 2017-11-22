@@ -1,0 +1,38 @@
+version: '2.1'
+
+services:
+
+  gateway.api:
+    image: sportstore/gateway.api:${TAG:-latest}
+    ports: 
+      - "5000:5000"
+    build:
+      context: ./Services/Gateway/Gateway.Api
+      dockerfile: Dockerfile    
+  
+  identity.api:
+    image: sportstore/identity.api:${TAG:-latest}
+    ports: 
+      - "5010:5010"
+    build:
+      context: ./Services/Identity/Identity.Api
+      dockerfile: Dockerfile  
+    depends_on:
+      - sql.data
+
+  catalog.api:
+    image: sportstore/catalog.api:${TAG:-latest}
+    ports: 
+      - "5020:5020"
+    build:
+      context: ./Services/Catalog/Catalog.Api
+      dockerfile: Dockerfile
+
+  sql.data:
+    image: microsoft/mssql-server-linux:latest   
+    ports: 
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Qwerty123"
+      ACCEPT_EULA: "Y"      
+      MSSQL_PID: "Developer"
