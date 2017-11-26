@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Catalog.Api.Entities
+namespace Catalog.Api.Infrastructure.Authentication
 {
     public class AuthOptions
     {

@@ -1,7 +1,8 @@
-﻿using Catalog.Api.Extentions;
-using Catalog.Api.Providers;
-using Identity.Api.Providers;
+﻿using Catalog.Api.Infrastructure.Authentication;
+using Catalog.Api.Infrastructure.Swagger;
+using Catalog.Api.Persistence.Context;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,10 +26,14 @@ namespace Catalog.Api
             
             var serviceProvider = services.BuildServiceProvider();
             var authOptionProvider = serviceProvider.GetService<IAuthOptionProvider>();
-     
-            services.AddSportStoreSystemAuthentication(authOptionProvider.GetSystemAuthOptions());             
-            services.AddSwagger(SwaggerPageName);
-            services.AddMvc();    
+            var connectionString = _configuration.GetConnectionString("CatalogDbConnection");
+            
+            services.AddTransient<IDatabaseInitializer, DatabaseInitializer>();
+            
+            services.AddSportStoreSystemAuthentication(authOptionProvider.GetSystemAuthOptions());
+            services.AddDbContext<CatalogDbContext>(x => x.UseSqlServer(connectionString));
+            services.AddSwagger(SwaggerPageName);          
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
@@ -38,7 +43,7 @@ namespace Catalog.Api
 
             app.UseAuthentication();
             app.UseSwaggerUI(SwaggerPageName);
-            app.UseMvc();
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

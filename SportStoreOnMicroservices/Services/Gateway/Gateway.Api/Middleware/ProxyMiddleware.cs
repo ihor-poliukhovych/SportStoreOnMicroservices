@@ -20,7 +20,7 @@ namespace Gateway.Api.Middleware
         private readonly Dictionary<string, ServiceConfig> _configs = new Dictionary<string, ServiceConfig>
         {
             {
-                "catalog", new ServiceConfig("http", "localhost", "5002")
+                "catalog", new ServiceConfig("http", "localhost", "5020")
             }
         };
 

@@ -27,7 +27,9 @@ services:
     build:
       context: ./Services/Catalog/Catalog.Api
       dockerfile: Dockerfile
-
+    depends_on:
+      - sql.data
+      
   sql.data:
     image: microsoft/mssql-server-linux:latest   
     ports: 

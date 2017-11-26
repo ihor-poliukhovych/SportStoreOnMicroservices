@@ -1,7 +1,4 @@
-﻿using Catalog.Api.Entities;
-using Catalog.Api.Providers;
-
-namespace Identity.Api.Providers
+﻿namespace Catalog.Api.Infrastructure.Authentication
 {
     public class AuthOptionProvider : IAuthOptionProvider
     {   

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace Catalog.Api.Extentions
+namespace Catalog.Api.Infrastructure.Swagger
 {
     public static class SwaggerExtentions
     {

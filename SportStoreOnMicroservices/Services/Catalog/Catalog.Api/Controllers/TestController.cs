@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Api.Controllers
 {
-    [Route("api/catalog/test")]
+    [Route("api/catalog/[controller]")]
     public class TestController : Controller
     {
         /// <summary>
@@ -11,8 +11,8 @@ namespace Catalog.Api.Controllers
         /// </summary>
         /// <returns>Returns user login</returns>
         [Authorize]
-        [HttpGet("mylogin")]
-        public IActionResult GetMyLogin()
+        [HttpGet("[action]")]
+        public IActionResult MyLogin()
         {
             return Ok($"Your login: {User.Identity.Name}");
         }
@@ -22,8 +22,8 @@ namespace Catalog.Api.Controllers
         /// </summary>
         /// <returns>Returns user role</returns>
         [Authorize(Roles = "test")]
-        [HttpGet("myrole")]
-        public IActionResult GetMyRole()
+        [HttpGet("[action]")]
+        public IActionResult MyRole()
         {
             return Ok("Your role: test");
         }

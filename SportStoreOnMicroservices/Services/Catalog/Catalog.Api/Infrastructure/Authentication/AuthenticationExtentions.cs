@@ -1,9 +1,8 @@
-﻿using Catalog.Api.Entities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Catalog.Api.Extentions
+namespace Catalog.Api.Infrastructure.Authentication
 {
     public static class AuthenticationExtentions
     {
