@@ -2,7 +2,7 @@
 
 Useful Docker commands: 
 
-docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Qwerty123' -p 1433:1433 -d microsoft/mssql-server-linux:latest
+docker-compose up
 
 # Gateway Api
 
@@ -10,12 +10,14 @@ url: localhost:5000
 
 # Identity Api
 
-url: localhost:5001
+url: localhost:5010
 
-swagger: localhost:5001\swagger
+swagger: localhost:5010\swagger
 
 # Catalog Api
 
-url: localhost:5002
+It is simple data-driven CRUD microservice
 
-swagger: localhost:5002\swagger
+url: localhost:5020
+
+swagger: localhost:5020\swagger
